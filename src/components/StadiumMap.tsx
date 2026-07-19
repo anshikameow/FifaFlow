@@ -37,7 +37,7 @@ export default function StadiumMap({
   activeRoute,
   onSelectFacility 
 }: StadiumMapProps) {
-  const [viewMode, setViewMode] = useState<'normal' | 'heatmap' | 'accessibility'>('normal');
+  const [viewMode, setViewMode] = useState<'normal' | 'heatmap' | 'accessibility' | 'list'>('normal');
   const [selectedElement, setSelectedElement] = useState<{
     type: 'gate' | 'stall' | 'washroom' | 'facility' | 'section';
     name: string;
@@ -142,239 +142,439 @@ export default function StadiumMap({
           >
             ADA View
           </button>
+          <button
+            id="map-view-list"
+            onClick={() => setViewMode('list')}
+            className={`px-2.5 py-1 text-[10px] font-bold rounded-md transition-all ${
+              viewMode === 'list' ? 'bg-indigo-500 text-white shadow-md' : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            List View
+          </button>
         </div>
       </div>
 
-      {/* Vector Stadium Container */}
-      <div className="flex-1 flex items-center justify-center py-4 relative">
-        <svg 
-          viewBox="0 0 500 500" 
-          className="w-full max-w-[430px] h-auto drop-shadow-[0_12px_24px_rgba(0,0,0,0.5)]"
-        >
-          {/* Outer Ring Boundary */}
-          <circle 
-            cx="250" 
-            cy="250" 
-            r="230" 
-            className="fill-none stroke-slate-800/80 stroke-[4] stroke-dasharray-[6,6]" 
-          />
-          <circle 
-            cx="250" 
-            cy="250" 
-            r="190" 
-            className="fill-slate-950/40 stroke-slate-800/60 stroke-[1]" 
-          />
-
-          {/* Football Field in Center */}
-          <g transform="translate(180, 200)">
-            {/* Field Turf */}
-            <rect 
-              width="140" 
-              height="100" 
-              rx="4" 
-              className="fill-emerald-950/40 stroke-emerald-500/20 stroke-[1.5]" 
-            />
-            {/* Midfield line */}
-            <line x1="70" y1="0" x2="70" y2="100" className="stroke-emerald-500/20 stroke-[1]" />
-            <circle cx="70" cy="50" r="20" className="fill-none stroke-emerald-500/20 stroke-[1]" />
-            {/* Goal boxes */}
-            <rect x="0" y="25" width="15" height="50" className="fill-none stroke-emerald-500/20 stroke-[1]" />
-            <rect x="125" y="25" width="15" height="50" className="fill-none stroke-emerald-500/20 stroke-[1]" />
-            <text x="70" y="54" textAnchor="middle" className="fill-emerald-500/30 font-mono font-bold text-[8px] tracking-wider uppercase">WC 2026</text>
-          </g>
-
-          {/* Gates Perimeter Markers */}
-          {gatesData.map(gate => {
-            const dynamicGate = gates.find(g => g.id === gate.id);
-            const gateColor = dynamicGate?.status === 'Closed' 
-              ? 'fill-slate-800 stroke-slate-600' 
-              : dynamicGate?.status === 'Congested' 
-                ? 'fill-rose-500/40 stroke-rose-400' 
-                : 'fill-emerald-500/30 stroke-emerald-400';
-
-            return (
-              <g 
-                key={gate.id} 
-                className="cursor-pointer group/gate"
-                onClick={() => setSelectedElement({
-                  type: 'gate',
-                  name: dynamicGate?.name || gate.label,
-                  detail: dynamicGate?.status === 'Closed' ? 'CLOSED - Security restriction.' : `Wait Time: ${dynamicGate?.avgWaitTimeMinutes} mins. Ingress level: ${dynamicGate?.crowdLevel}.`,
-                  accessibility: dynamicGate?.accessibility.join(', ') || 'None'
-                })}
-              >
-                <circle 
-                  cx={gate.x} 
-                  cy={gate.y} 
-                  r="12" 
-                  className={`${gateColor} stroke-[2] transition-all duration-300 group-hover/gate:r-14`} 
-                />
-                <text 
-                  x={gate.x} 
-                  y={gate.y + 3} 
-                  textAnchor="middle" 
-                  className="fill-slate-300 font-mono text-[6px] font-extrabold"
-                >
-                  {gate.id.replace('gate-', '').toUpperCase()}
-                </text>
-                {/* Gate Tooltip descriptor on hover */}
-                <circle cx={gate.x} cy={gate.y} r="25" className="fill-transparent" />
-              </g>
-            );
-          })}
-
-          {/* Tiered Seating Sections */}
-          {sectionsData.map(section => {
-            const sectorData = stadium.sections.find(s => s.id === section.id);
-            const isUserSeatSection = setup.seat === section.id;
-            
-            let colorClass = getCrowdColor(sectorData?.crowdLevel || 'Low');
-            if (viewMode === 'heatmap') {
-              colorClass = getCrowdHeatColor(sectorData?.heatmapValue || 0.3);
-            } else if (viewMode === 'accessibility') {
-              colorClass = setup.accessibility === 'Wheelchair' && ['101', '110', '130', '138'].includes(section.id)
-                ? 'fill-blue-500/30 stroke-blue-400'
-                : 'fill-slate-900/40 stroke-slate-800';
-            }
-
-            return (
-              <g 
-                key={section.id} 
-                className="cursor-pointer group/section"
-                onClick={() => setSelectedElement({
-                  type: 'section',
-                  name: `Lower Section ${section.id}`,
-                  detail: `Crowd Density: ${sectorData?.crowdLevel || 'Low'}. Level: Lower Bowl. Gate connection: ${sectorData?.gate.toUpperCase()}.`,
-                  accessibility: ['101', '110', '130', '138'].includes(section.id) ? 'Fully Wheelchair Ramp Enabled & ADA seating rows' : 'Standard Incline Steps only'
-                })}
-              >
-                <circle 
-                  cx={section.cx} 
-                  cy={section.cy} 
-                  r={section.r} 
-                  className={`${colorClass} stroke-[1.5] transition-all duration-300 group-hover/section:scale-[1.05] origin-center`} 
-                />
-                
-                {/* Seat Section Badge Label */}
-                <text 
-                  x={section.cx} 
-                  y={section.cy + 3} 
-                  textAnchor="middle" 
-                  className="fill-slate-100 font-sans text-[7px] font-bold tracking-tight pointer-events-none"
-                >
-                  {section.id}
-                </text>
-
-                {/* User Seat Highlight */}
-                {isUserSeatSection && (
-                  <g>
-                    <circle 
-                      cx={section.cx} 
-                      cy={section.cy} 
-                      r={section.r + 6} 
-                      className="fill-none stroke-blue-400 stroke-[2.5] animate-ping opacity-60" 
-                    />
-                    <circle 
-                      cx={section.cx + 12} 
-                      cy={section.cy - 12} 
-                      r="5" 
-                      className="fill-blue-500 stroke-slate-950 stroke-[1.5]" 
-                    />
-                    <text 
-                      x={section.cx + 12} 
-                      y={section.cy - 10} 
-                      textAnchor="middle" 
-                      className="fill-slate-100 font-extrabold text-[5px]"
+      {viewMode === 'list' ? (
+        <div className="flex-1 overflow-y-auto max-h-[460px] space-y-4 py-4 pr-1 scrollbar-thin">
+          {/* Gates List */}
+          <div className="space-y-2">
+            <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+              <span>🚪</span> Entry Gates & Security Checkpoints
+            </h4>
+            <div className="grid grid-cols-1 gap-2">
+              {gatesData.map(gate => {
+                const dynamicGate = gates.find(g => g.id === gate.id);
+                return (
+                  <div key={gate.id} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-xs">
+                    <div>
+                      <span className="font-extrabold text-white">{dynamicGate?.name || gate.label}</span>
+                      <span className="text-[10px] text-slate-400 block mt-0.5">
+                        Wait Time: <strong className="text-emerald-400">{dynamicGate?.avgWaitTimeMinutes || 5} mins</strong> • Status: {dynamicGate?.status || 'Open'}
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => setSelectedElement({
+                        type: 'gate',
+                        name: dynamicGate?.name || gate.label,
+                        detail: dynamicGate?.status === 'Closed' ? 'CLOSED - Security restriction.' : `Wait Time: ${dynamicGate?.avgWaitTimeMinutes} mins. Ingress level: ${dynamicGate?.crowdLevel}.`,
+                        accessibility: dynamicGate?.accessibility.join(', ') || 'None'
+                      })}
+                      className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-[9px] uppercase tracking-wider rounded-lg transition-all focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500 focus-visible:outline-none"
                     >
-                      ★
-                    </text>
-                  </g>
+                      Inspect
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Food Stalls */}
+          <div className="space-y-2">
+            <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+              <span>🍔</span> Food Stalls & Concessions
+            </h4>
+            <div className="grid grid-cols-1 gap-2">
+              {foodStalls.map(stall => (
+                <div key={stall.id} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-xs">
+                  <div>
+                    <span className="font-extrabold text-white">{stall.name}</span>
+                    <span className="text-[10px] text-slate-400 block mt-0.5">
+                      Cuisine: {stall.cuisine} • Wait: <strong className="text-amber-400">{stall.queueLengthMinutes} mins</strong> • Section: {stall.section}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => setSelectedElement({
+                      type: 'stall' as any,
+                      name: stall.name,
+                      detail: `Cuisine: ${stall.cuisine}. Queue line: ${stall.queueLengthMinutes} mins. Section assignment: ${stall.section}. Signature item: ${stall.popularItems[0]}.`,
+                      accessibility: 'Fully wheelchair flat approach, low counters'
+                    })}
+                    className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-[9px] uppercase tracking-wider rounded-lg transition-all focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500 focus-visible:outline-none"
+                  >
+                    Inspect
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Washrooms */}
+          <div className="space-y-2">
+            <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+              <span>💧</span> Restrooms & Washrooms
+            </h4>
+            <div className="grid grid-cols-1 gap-2">
+              {washrooms.map(wash => {
+                const name = `${wash.gender} Restroom`;
+                const status = wash.queueLengthMinutes > 10 ? 'Busy' : 'Available';
+                const waitMinutes = wash.queueLengthMinutes;
+                const accessibilityText = wash.accessibility ? 'ADA Wide-Entry / Wheelchair Roll-in Friendly' : 'Standard Access';
+                return (
+                  <div key={wash.id} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-xs">
+                    <div>
+                      <span className="font-extrabold text-white">{name}</span>
+                      <span className="text-[10px] text-slate-400 block mt-0.5">
+                        Status: <span className={`${status === 'Busy' ? 'text-amber-400' : 'text-emerald-400'} font-bold`}>{status}</span> • Wait time: <strong>{waitMinutes} mins</strong> • Section: {wash.section}
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => setSelectedElement({
+                        type: 'washroom',
+                        name: name,
+                        detail: `Status: ${status}. Active waiting line: ${waitMinutes} minutes. Positioned in Section ${wash.section}.`,
+                        accessibility: accessibilityText
+                      })}
+                      className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-[9px] uppercase tracking-wider rounded-lg transition-all focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500 focus-visible:outline-none"
+                    >
+                      Inspect
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      ) : (
+        /* Vector Stadium Container */
+        <div className="flex-1 flex items-center justify-center py-4 relative">
+          <svg 
+            viewBox="0 0 500 500" 
+            role="img"
+            aria-label="Interactive Vector Stadium Map displaying sectors, entrances, food stalls, restrooms and highlighted dynamic walking routes"
+            className="w-full max-w-[430px] h-auto drop-shadow-[0_12px_24px_rgba(0,0,0,0.5)]"
+          >
+            {/* Outer Ring Boundary */}
+            <circle 
+              cx="250" 
+              cy="250" 
+              r="230" 
+              className="fill-none stroke-slate-800/80 stroke-[4] stroke-dasharray-[6,6]" 
+            />
+            <circle 
+              cx="250" 
+              cy="250" 
+              r="190" 
+              className="fill-slate-950/40 stroke-slate-800/60 stroke-[1]" 
+            />
+
+            {/* Football Field in Center */}
+            <g transform="translate(180, 200)">
+              {/* Field Turf */}
+              <rect 
+                width="140" 
+                height="100" 
+                rx="4" 
+                className="fill-emerald-950/40 stroke-emerald-500/20 stroke-[1.5]" 
+              />
+              {/* Midfield line */}
+              <line x1="70" y1="0" x2="70" y2="100" className="stroke-emerald-500/20 stroke-[1]" />
+              <circle cx="70" cy="50" r="20" className="fill-none stroke-emerald-500/20 stroke-[1]" />
+              {/* Goal boxes */}
+              <rect x="0" y="25" width="15" height="50" className="fill-none stroke-emerald-500/20 stroke-[1]" />
+              <rect x="125" y="25" width="15" height="50" className="fill-none stroke-emerald-500/20 stroke-[1]" />
+              <text x="70" y="54" textAnchor="middle" className="fill-emerald-500/30 font-mono font-bold text-[8px] tracking-wider uppercase">WC 2026</text>
+            </g>
+
+            {/* Gates Perimeter Markers */}
+            {gatesData.map(gate => {
+              const dynamicGate = gates.find(g => g.id === gate.id);
+              const gateColor = dynamicGate?.status === 'Closed' 
+                ? 'fill-slate-800 stroke-slate-600' 
+                : dynamicGate?.status === 'Congested' 
+                  ? 'fill-rose-500/40 stroke-rose-400' 
+                  : 'fill-emerald-500/30 stroke-emerald-400';
+
+              return (
+                <g 
+                  key={gate.id} 
+                  className="cursor-pointer group/gate focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+                  tabIndex={0}
+                  role="button"
+                  aria-label={`Gate checkpoint ${gate.label}. Wait time ${dynamicGate?.avgWaitTimeMinutes || 5} minutes.`}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      setSelectedElement({
+                        type: 'gate',
+                        name: dynamicGate?.name || gate.label,
+                        detail: dynamicGate?.status === 'Closed' ? 'CLOSED - Security restriction.' : `Wait Time: ${dynamicGate?.avgWaitTimeMinutes} mins. Ingress level: ${dynamicGate?.crowdLevel}.`,
+                        accessibility: dynamicGate?.accessibility.join(', ') || 'None'
+                      });
+                    }
+                  }}
+                  onClick={() => setSelectedElement({
+                    type: 'gate',
+                    name: dynamicGate?.name || gate.label,
+                    detail: dynamicGate?.status === 'Closed' ? 'CLOSED - Security restriction.' : `Wait Time: ${dynamicGate?.avgWaitTimeMinutes} mins. Ingress level: ${dynamicGate?.crowdLevel}.`,
+                    accessibility: dynamicGate?.accessibility.join(', ') || 'None'
+                  })}
+                >
+                  <circle 
+                    cx={gate.x} 
+                    cy={gate.y} 
+                    r="12" 
+                    className={`${gateColor} stroke-[2] transition-all duration-300 group-hover/gate:r-14`} 
+                  />
+                  <text 
+                    x={gate.x} 
+                    y={gate.y + 3} 
+                    textAnchor="middle" 
+                    className="fill-slate-300 font-mono text-[6px] font-extrabold"
+                  >
+                    {gate.id.replace('gate-', '').toUpperCase()}
+                  </text>
+                  {/* Gate Tooltip descriptor on hover */}
+                  <circle cx={gate.x} cy={gate.y} r="25" className="fill-transparent" />
+                </g>
+              );
+            })}
+
+            {/* Tiered Seating Sections */}
+            {sectionsData.map(section => {
+              const sectorData = stadium.sections.find(s => s.id === section.id);
+              const isUserSeatSection = setup.seat === section.id;
+              
+              let colorClass = getCrowdColor(sectorData?.crowdLevel || 'Low');
+              if (viewMode === 'heatmap') {
+                colorClass = getCrowdHeatColor(sectorData?.heatmapValue || 0.3);
+              } else if (viewMode === 'accessibility') {
+                colorClass = setup.accessibility === 'Wheelchair' && ['101', '110', '130', '138'].includes(section.id)
+                  ? 'fill-blue-500/30 stroke-blue-400'
+                  : 'fill-slate-900/40 stroke-slate-800';
+              }
+
+              return (
+                <g 
+                  key={section.id} 
+                  className="cursor-pointer group/section focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+                  tabIndex={0}
+                  role="button"
+                  aria-label={`Seat Sector ${section.id}. Crowd level ${sectorData?.crowdLevel || 'Low'}.`}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      setSelectedElement({
+                        type: 'section',
+                        name: `Lower Section ${section.id}`,
+                        detail: `Crowd Density: ${sectorData?.crowdLevel || 'Low'}. Level: Lower Bowl. Gate connection: ${sectorData?.gate.toUpperCase()}.`,
+                        accessibility: ['101', '110', '130', '138'].includes(section.id) ? 'Fully Wheelchair Ramp Enabled & ADA seating rows' : 'Standard Incline Steps only'
+                      });
+                    }
+                  }}
+                  onClick={() => setSelectedElement({
+                    type: 'section',
+                    name: `Lower Section ${section.id}`,
+                    detail: `Crowd Density: ${sectorData?.crowdLevel || 'Low'}. Level: Lower Bowl. Gate connection: ${sectorData?.gate.toUpperCase()}.`,
+                    accessibility: ['101', '110', '130', '138'].includes(section.id) ? 'Fully Wheelchair Ramp Enabled & ADA seating rows' : 'Standard Incline Steps only'
+                  })}
+                >
+                  <circle 
+                    cx={section.cx} 
+                    cy={section.cy} 
+                    r={section.r} 
+                    className={`${colorClass} stroke-[1.5] transition-all duration-300 group-hover/section:scale-[1.05] origin-center`} 
+                  />
+                  
+                  {/* Seat Section Badge Label */}
+                  <text 
+                    x={section.cx} 
+                    y={section.cy + 3} 
+                    textAnchor="middle" 
+                    className="fill-slate-100 font-sans text-[7px] font-bold tracking-tight pointer-events-none"
+                  >
+                    {section.id}
+                  </text>
+
+                  {/* User Seat Highlight */}
+                  {isUserSeatSection && (
+                    <g>
+                      <circle 
+                        cx={section.cx} 
+                        cy={section.cy} 
+                        r={section.r + 6} 
+                        className="fill-none stroke-blue-400 stroke-[2.5] animate-ping opacity-60" 
+                      />
+                      <circle 
+                        cx={section.cx + 12} 
+                        cy={section.cy - 12} 
+                        r="5" 
+                        className="fill-blue-500 stroke-slate-950 stroke-[1.5]" 
+                      />
+                      <text 
+                        x={section.cx + 12} 
+                        y={section.cy - 10} 
+                        textAnchor="middle" 
+                        className="fill-slate-100 font-extrabold text-[5px]"
+                      >
+                        ★
+                      </text>
+                    </g>
+                  )}
+                </g>
+              );
+            })}
+
+            {/* Smart Animated Walking Routes overlaying top */}
+            {activeRoute && (
+              <g>
+                {/* Route Path line from Gates to Section */}
+                {activeRoute === 'to-seat' && (
+                  <path
+                    d={`M ${startCoords.x} ${startCoords.y} Q ${setup.accessibility === 'Wheelchair' ? '150 250, 100 290' : '300 150, 350 250'} T ${userSeatSection.cx} ${userSeatSection.cy}`}
+                    fill="none"
+                    className={`${
+                      setup.accessibility === 'Wheelchair' ? 'stroke-blue-400' : 'stroke-emerald-400'
+                    } stroke-[3] stroke-dasharray-[8,4]`}
+                    style={{ strokeDashoffset: '20', animation: 'dash 1.5s linear infinite' }}
+                  />
+                )}
+                {activeRoute === 'to-food' && (
+                  <path
+                    d={`M ${userSeatSection.cx} ${userSeatSection.cy} Q 250 250 410 290`}
+                    fill="none"
+                    className="stroke-amber-400 stroke-[3] stroke-dasharray-[8,4]"
+                    style={{ strokeDashoffset: '20', animation: 'dash 1.5s linear infinite' }}
+                  />
+                )}
+                {activeRoute === 'to-washroom' && (
+                  <path
+                    d={`M ${userSeatSection.cx} ${userSeatSection.cy} L 370 380`}
+                    fill="none"
+                    className="stroke-blue-400 stroke-[3] stroke-dasharray-[8,4]"
+                    style={{ strokeDashoffset: '20', animation: 'dash 1.5s linear infinite' }}
+                  />
                 )}
               </g>
-            );
-          })}
+            )}
 
-          {/* Smart Animated Walking Routes overlaying top */}
-          {activeRoute && (
-            <g>
-              {/* Route Path line from Gates to Section */}
-              {activeRoute === 'to-seat' && (
-                <path
-                  d={`M ${startCoords.x} ${startCoords.y} Q ${setup.accessibility === 'Wheelchair' ? '150 250, 100 290' : '300 150, 350 250'} T ${userSeatSection.cx} ${userSeatSection.cy}`}
-                  fill="none"
-                  className={`${
-                    setup.accessibility === 'Wheelchair' ? 'stroke-blue-400' : 'stroke-emerald-400'
-                  } stroke-[3] stroke-dasharray-[8,4]`}
-                  style={{ strokeDashoffset: '20', animation: 'dash 1.5s linear infinite' }}
-                />
-              )}
-              {activeRoute === 'to-food' && (
-                <path
-                  d={`M ${userSeatSection.cx} ${userSeatSection.cy} Q 250 250 410 290`}
-                  fill="none"
-                  className="stroke-amber-400 stroke-[3] stroke-dasharray-[8,4]"
-                  style={{ strokeDashoffset: '20', animation: 'dash 1.5s linear infinite' }}
-                />
-              )}
-              {activeRoute === 'to-washroom' && (
-                <path
-                  d={`M ${userSeatSection.cx} ${userSeatSection.cy} L 370 380`}
-                  fill="none"
-                  className="stroke-blue-400 stroke-[3] stroke-dasharray-[8,4]"
-                  style={{ strokeDashoffset: '20', animation: 'dash 1.5s linear infinite' }}
-                />
-              )}
+            {/* Interactive Facility Markers as small glowing nodes */}
+            {/* Washrooms (Section 115, 138, 128) */}
+            <g 
+              transform="translate(370, 360)" 
+              className="cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500" 
+              tabIndex={0}
+              role="button"
+              aria-label="Restroom facility Section 115. Accessible with grab rails."
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  onSelectFacility('washroom', 'wash-115');
+                }
+              }}
+              onClick={() => onSelectFacility('washroom', 'wash-115')}
+            >
+              <circle cx="0" cy="0" r="7" className="fill-blue-500 stroke-slate-950 stroke-[1] shadow-lg animate-pulse" />
+              <text x="0" y="2" textAnchor="middle" className="fill-slate-100 font-bold text-[6px]">WC</text>
             </g>
-          )}
 
-          {/* Interactive Facility Markers as small glowing nodes */}
-          {/* Washrooms (Section 115, 138, 128) */}
-          <g transform="translate(370, 360)" className="cursor-pointer" onClick={() => onSelectFacility('washroom', 'wash-115')}>
-            <circle cx="0" cy="0" r="7" className="fill-blue-500 stroke-slate-950 stroke-[1] shadow-lg animate-pulse" />
-            <text x="0" y="2" textAnchor="middle" className="fill-slate-100 font-bold text-[6px]">WC</text>
-          </g>
+            {/* Food Stalls (Section 112, 104) */}
+            <g 
+              transform="translate(410, 310)" 
+              className="cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500" 
+              tabIndex={0}
+              role="button"
+              aria-label="Food concessions Stall Section 112."
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  onSelectFacility('food', 'food-1');
+                }
+              }}
+              onClick={() => onSelectFacility('food', 'food-1')}
+            >
+              <circle cx="0" cy="0" r="7" className="fill-amber-500 stroke-slate-950 stroke-[1] shadow-lg" />
+              <text x="0" y="2.5" textAnchor="middle" className="fill-slate-950 font-bold text-[6px]">🌭</text>
+            </g>
 
-          {/* Food Stalls (Section 112, 104) */}
-          <g transform="translate(410, 310)" className="cursor-pointer" onClick={() => onSelectFacility('food', 'food-1')}>
-            <circle cx="0" cy="0" r="7" className="fill-amber-500 stroke-slate-950 stroke-[1] shadow-lg" />
-            <text x="0" y="2.5" textAnchor="middle" className="fill-slate-950 font-bold text-[6px]">🌭</text>
-          </g>
+            <g 
+              transform="translate(350, 100)" 
+              className="cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500" 
+              tabIndex={0}
+              role="button"
+              aria-label="Food concessions Stall Section 104."
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  onSelectFacility('food', 'food-2');
+                }
+              }}
+              onClick={() => onSelectFacility('food', 'food-2')}
+            >
+              <circle cx="0" cy="0" r="7" className="fill-amber-500 stroke-slate-950 stroke-[1] shadow-lg" />
+              <text x="0" y="2.5" textAnchor="middle" className="fill-slate-950 font-bold text-[6px]">🌮</text>
+            </g>
 
-          <g transform="translate(350, 100)" className="cursor-pointer" onClick={() => onSelectFacility('food', 'food-2')}>
-            <circle cx="0" cy="0" r="7" className="fill-amber-500 stroke-slate-950 stroke-[1] shadow-lg" />
-            <text x="0" y="2.5" textAnchor="middle" className="fill-slate-950 font-bold text-[6px]">🌮</text>
-          </g>
+            {/* Medical hub at Section 110 */}
+            <g 
+              transform="translate(410, 185)" 
+              className="cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500" 
+              tabIndex={0}
+              role="button"
+              aria-label="First aid medical hub Section 110."
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  onSelectFacility('facility', 'facility-med-1');
+                }
+              }}
+              onClick={() => onSelectFacility('facility', 'facility-med-1')}
+            >
+              <circle cx="0" cy="0" r="7" className="fill-rose-500 stroke-slate-950 stroke-[1] shadow-lg" />
+              <text x="0" y="2.5" textAnchor="middle" className="fill-slate-100 font-extrabold text-[7px]">+</text>
+            </g>
 
-          {/* Medical hub at Section 110 */}
-          <g transform="translate(410, 185)" className="cursor-pointer" onClick={() => onSelectFacility('facility', 'facility-med-1')}>
-            <circle cx="0" cy="0" r="7" className="fill-rose-500 stroke-slate-950 stroke-[1] shadow-lg" />
-            <text x="0" y="2.5" textAnchor="middle" className="fill-slate-100 font-extrabold text-[7px]">+</text>
-          </g>
+            {/* Charging Hub at Section 104 */}
+            <g 
+              transform="translate(390, 140)" 
+              className="cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500" 
+              tabIndex={0}
+              role="button"
+              aria-label="Mobile phone battery charging hub Section 104."
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  onSelectFacility('facility', 'facility-charge-1');
+                }
+              }}
+              onClick={() => onSelectFacility('facility', 'facility-charge-1')}
+            >
+              <circle cx="0" cy="0" r="7" className="fill-teal-500 stroke-slate-950 stroke-[1] shadow-lg" />
+              <text x="0" y="2.5" textAnchor="middle" className="fill-slate-100 font-bold text-[6px]">⚡</text>
+            </g>
+          </svg>
 
-          {/* Charging Hub at Section 104 */}
-          <g transform="translate(390, 140)" className="cursor-pointer" onClick={() => onSelectFacility('facility', 'facility-charge-1')}>
-            <circle cx="0" cy="0" r="7" className="fill-teal-500 stroke-slate-950 stroke-[1] shadow-lg" />
-            <text x="0" y="2.5" textAnchor="middle" className="fill-slate-100 font-bold text-[6px]">⚡</text>
-          </g>
-        </svg>
-
-        {/* Route legend / details */}
-        <div className="absolute bottom-1 left-2 bg-slate-950/90 border border-slate-800/80 rounded-lg p-2 text-[9px] text-slate-400 space-y-1 z-10 max-w-[150px]">
-          <div className="font-semibold text-slate-200">Active Routing:</div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-            <span>Your Seat (Sec {setup.seat})</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-            <span>ADA Ingress (Gate {startingGate.replace('gate-', '').toUpperCase()})</span>
-          </div>
-          <div className="flex items-center gap-1.5 mt-1 pt-1 border-t border-slate-800">
-            <Accessibility className="w-3.5 h-3.5 text-blue-400" />
-            <span className="font-mono text-slate-300">{setup.accessibility} Mode</span>
+          {/* Route legend / details */}
+          <div className="absolute bottom-1 left-2 bg-slate-950/90 border border-slate-800/80 rounded-lg p-2 text-[9px] text-slate-400 space-y-1 z-10 max-w-[150px]">
+            <div className="font-semibold text-slate-200">Active Routing:</div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+              <span>Your Seat (Sec {setup.seat})</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              <span>ADA Ingress (Gate {startingGate.replace('gate-', '').toUpperCase()})</span>
+            </div>
+            <div className="flex items-center gap-1.5 mt-1 pt-1 border-t border-slate-800">
+              <Accessibility className="w-3.5 h-3.5 text-blue-400" />
+              <span className="font-mono text-slate-300">{setup.accessibility} Mode</span>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Footer Drawer Inspector Card (When clicked) */}
       {selectedElement ? (

@@ -27,7 +27,7 @@ interface TimelineViewProps {
 export default function TimelineView({ setup, activeStepIndex, onStepClick }: TimelineViewProps) {
   
   // Custom timeline steps generated dynamically based on transport mode and accessibility
-  const steps: { title: string; time: string; desc: string; routeKey: string | null; icon: any }[] = [
+  const steps: { title: string; time: string; desc: string; routeKey: string | null; icon: React.ComponentType<{ className?: string }> }[] = [
     {
       title: 'Leave Hotel',
       time: '16:00',

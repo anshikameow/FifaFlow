@@ -252,7 +252,7 @@ export default function MatchCenterSection({ setup, match, onSendMessage }: Matc
   };
 
   return (
-    <div id="match-center-container" className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+    <section id="match-center-container" aria-label="FIFA World Cup 2026 Matchday Arena" className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
       
       {/* Premium Match Center Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-3xl bg-gradient-to-r from-indigo-900 via-purple-900 to-pink-900 border border-indigo-700/30">
@@ -271,10 +271,13 @@ export default function MatchCenterSection({ setup, match, onSendMessage }: Matc
         </div>
 
         {/* Dynamic subtabs menu navigation - Spotify style */}
-        <div className="flex bg-slate-950/60 p-1 rounded-2xl border border-slate-800 self-start md:self-center">
+        <div role="tablist" aria-label="Match Arena Sections" className="flex bg-slate-950/60 p-1 rounded-2xl border border-slate-800 self-start md:self-center">
           <button
+            role="tab"
+            aria-selected={subTab === 'predictor'}
+            aria-controls="tab-content-panel"
             onClick={() => setSubTab('predictor')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-pink-500 focus-visible:outline-none ${
               subTab === 'predictor' 
                 ? 'bg-gradient-to-r from-pink-500 to-indigo-600 text-white shadow-md' 
                 : 'text-slate-400 hover:text-slate-200'
@@ -284,8 +287,11 @@ export default function MatchCenterSection({ setup, match, onSendMessage }: Matc
             Projections
           </button>
           <button
+            role="tab"
+            aria-selected={subTab === 'lineups'}
+            aria-controls="tab-content-panel"
             onClick={() => setSubTab('lineups')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-pink-500 focus-visible:outline-none ${
               subTab === 'lineups' 
                 ? 'bg-gradient-to-r from-pink-500 to-indigo-600 text-white shadow-md' 
                 : 'text-slate-400 hover:text-slate-200'
@@ -295,8 +301,11 @@ export default function MatchCenterSection({ setup, match, onSendMessage }: Matc
             Tactics
           </button>
           <button
+            role="tab"
+            aria-selected={subTab === 'live'}
+            aria-controls="tab-content-panel"
             onClick={() => setSubTab('live')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-pink-500 focus-visible:outline-none ${
               subTab === 'live' 
                 ? 'bg-gradient-to-r from-pink-500 to-indigo-600 text-white shadow-md' 
                 : 'text-slate-400 hover:text-slate-200'
@@ -306,8 +315,11 @@ export default function MatchCenterSection({ setup, match, onSendMessage }: Matc
             Live & Stats
           </button>
           <button
+            role="tab"
+            aria-selected={subTab === 'fan'}
+            aria-controls="tab-content-panel"
             onClick={() => setSubTab('fan')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-pink-500 focus-visible:outline-none ${
               subTab === 'fan' 
                 ? 'bg-gradient-to-r from-pink-500 to-indigo-600 text-white shadow-md' 
                 : 'text-slate-400 hover:text-slate-200'
@@ -1234,6 +1246,6 @@ export default function MatchCenterSection({ setup, match, onSendMessage }: Matc
         </div>
       )}
 
-    </div>
+    </section>
   );
 }

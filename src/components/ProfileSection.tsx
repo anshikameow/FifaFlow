@@ -55,7 +55,7 @@ export default function ProfileSection({
   const selectedMatch = matches.find(m => m.id === localMatchId) || matches[0];
 
   return (
-    <div id="profile-section-container" className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-in fade-in slide-in-from-bottom-2 duration-400">
+    <section id="profile-section-container" aria-label="Spectator Profile Customization" className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-in fade-in slide-in-from-bottom-2 duration-400">
       
       {/* Left Column: Visual Ticket Pass & Stats card (lg:col-span-5) */}
       <div className="lg:col-span-5 space-y-6">
@@ -137,23 +137,25 @@ export default function ProfileSection({
         <div className="space-y-4 font-sans text-xs">
           {/* Seating Sector Input */}
           <div>
-            <label className="block text-slate-400 font-bold mb-1.5">Sector Seat Assignment</label>
+            <label htmlFor="profile-seat-input" className="block text-slate-400 font-bold mb-1.5">Sector Seat Assignment</label>
             <input
+              id="profile-seat-input"
               type="text"
               value={localSeat}
               onChange={(e) => setLocalSeat(e.target.value)}
               placeholder="e.g. 130"
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-300 focus:outline-none focus:border-indigo-500"
+              className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:border-indigo-500"
             />
           </div>
 
           {/* Language selection drop */}
           <div>
-            <label className="block text-slate-400 font-bold mb-1.5">Assistant language</label>
+            <label htmlFor="profile-language-select" className="block text-slate-400 font-bold mb-1.5">Assistant language</label>
             <select
+              id="profile-language-select"
               value={localLanguage}
               onChange={(e) => setLocalLanguage(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-300"
+              className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
               <option value="English (US)">English (US)</option>
               <option value="Spanish (ES)">Español (ES)</option>
@@ -165,8 +167,8 @@ export default function ProfileSection({
 
           {/* Accessibility mode checklist */}
           <div>
-            <label className="block text-slate-400 font-bold mb-1.5">Accessibility profile mode</label>
-            <div className="grid grid-cols-2 gap-2">
+            <label id="profile-accessibility-label" className="block text-slate-400 font-bold mb-1.5">Accessibility profile mode</label>
+            <div role="radiogroup" aria-labelledby="profile-accessibility-label" className="grid grid-cols-2 gap-2">
               {[
                 { id: 'Standard', label: 'Standard Access' },
                 { id: 'Wheelchair', label: 'Wheelchair (Elevator/Ramps)' },
@@ -176,8 +178,10 @@ export default function ProfileSection({
               ].map((acc) => (
                 <button
                   key={acc.id}
+                  role="radio"
+                  aria-checked={localAccess === acc.id}
                   onClick={() => setLocalAccess(acc.id as any)}
-                  className={`p-2.5 rounded-xl border text-left font-medium transition-all cursor-pointer ${
+                  className={`p-2.5 rounded-xl border text-left font-medium transition-all focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500 focus-visible:outline-none cursor-pointer ${
                     localAccess === acc.id 
                       ? 'bg-indigo-500/10 border-indigo-500 text-indigo-400 font-bold' 
                       : 'bg-slate-950/80 border-slate-800 hover:border-slate-700 text-slate-400'
@@ -191,8 +195,8 @@ export default function ProfileSection({
 
           {/* Commute option selection */}
           <div>
-            <label className="block text-slate-400 font-bold mb-1.5">Transportation mode</label>
-            <div className="grid grid-cols-4 gap-2">
+            <label id="profile-transport-label" className="block text-slate-400 font-bold mb-1.5">Transportation mode</label>
+            <div role="radiogroup" aria-labelledby="profile-transport-label" className="grid grid-cols-4 gap-2">
               {[
                 { id: 'Metro', label: 'Metro' },
                 { id: 'Car', label: 'Rideshare' },
@@ -201,8 +205,10 @@ export default function ProfileSection({
               ].map((trans) => (
                 <button
                   key={trans.id}
+                  role="radio"
+                  aria-checked={localTransport === trans.id}
                   onClick={() => setLocalTransport(trans.id as any)}
-                  className={`p-2.5 rounded-xl border text-center font-bold transition-all cursor-pointer text-[11px] ${
+                  className={`p-2.5 rounded-xl border text-center font-bold transition-all focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500 focus-visible:outline-none cursor-pointer text-[11px] ${
                     localTransport === trans.id 
                       ? 'bg-emerald-500/10 border-emerald-500 text-emerald-400 font-black' 
                       : 'bg-slate-950/80 border-slate-800 hover:border-slate-700 text-slate-400'
@@ -217,7 +223,7 @@ export default function ProfileSection({
           {/* Save trigger */}
           <button
             onClick={handleSave}
-            className="w-full py-3 bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-500 text-white font-extrabold rounded-xl hover:opacity-90 transition-all uppercase tracking-wider shadow-lg shadow-indigo-500/10 flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full py-3 bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-500 text-white font-extrabold rounded-xl focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500 focus-visible:outline-none hover:opacity-90 transition-all uppercase tracking-wider shadow-lg shadow-indigo-500/10 flex items-center justify-center gap-2 cursor-pointer"
           >
             <Save className="w-4.5 h-4.5" />
             Save Profile Customizations
@@ -232,6 +238,6 @@ export default function ProfileSection({
         </div>
       </div>
 
-    </div>
+    </section>
   );
 }

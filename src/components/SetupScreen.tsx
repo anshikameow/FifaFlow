@@ -326,7 +326,7 @@ export default function SetupScreen({ stadiums, matches, onComplete, isLight, on
             {/* Stadium & Match Selection */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                <label htmlFor="stadium-selector" className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
                   <MapPin className="w-3.5 h-3.5 text-rose-400" />
                   Select Stadium
                 </label>
@@ -334,7 +334,7 @@ export default function SetupScreen({ stadiums, matches, onComplete, isLight, on
                   id="stadium-selector"
                   value={stadiumId}
                   onChange={(e) => handleStadiumChange(e.target.value)}
-                  className="w-full bg-slate-950/90 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500/30 cursor-pointer transition-all"
+                  className="w-full bg-slate-950/90 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500 cursor-pointer transition-all"
                 >
                   {stadiums.map(s => (
                     <option key={s.id} value={s.id}>{s.name} ({s.city})</option>
@@ -343,7 +343,7 @@ export default function SetupScreen({ stadiums, matches, onComplete, isLight, on
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                <label htmlFor="match-selector" className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
                   <Calendar className="w-3.5 h-3.5 text-orange-400" />
                   Select Match
                 </label>
@@ -351,7 +351,7 @@ export default function SetupScreen({ stadiums, matches, onComplete, isLight, on
                   id="match-selector"
                   value={matchId}
                   onChange={(e) => setMatchId(e.target.value)}
-                  className="w-full bg-slate-950/90 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/30 cursor-pointer transition-all"
+                  className="w-full bg-slate-950/90 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 cursor-pointer transition-all"
                 >
                   {availableMatches.map(m => (
                     <option key={m.id} value={m.id}>{m.teams}</option>
@@ -363,7 +363,7 @@ export default function SetupScreen({ stadiums, matches, onComplete, isLight, on
             {/* Seat & Preferred Language */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                <label htmlFor="seat-selector" className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
                   <User className="w-3.5 h-3.5 text-yellow-400" />
                   Your Seat Section
                 </label>
@@ -371,7 +371,7 @@ export default function SetupScreen({ stadiums, matches, onComplete, isLight, on
                   id="seat-selector"
                   value={seat}
                   onChange={(e) => setSeat(e.target.value)}
-                  className="w-full bg-slate-950/90 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500/30 cursor-pointer transition-all"
+                  className="w-full bg-slate-950/90 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 cursor-pointer transition-all"
                 >
                   {seats.map(s => (
                     <option key={s} value={s}>Lower Section {s}</option>
@@ -380,7 +380,7 @@ export default function SetupScreen({ stadiums, matches, onComplete, isLight, on
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                <label htmlFor="language-selector" className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
                   <Globe className="w-3.5 h-3.5 text-emerald-400" />
                   Language / अनुवाद
                 </label>
@@ -388,7 +388,7 @@ export default function SetupScreen({ stadiums, matches, onComplete, isLight, on
                   id="language-selector"
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
-                  className="w-full bg-slate-950/90 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 cursor-pointer transition-all"
+                  className="w-full bg-slate-950/90 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 cursor-pointer transition-all"
                 >
                   {languages.map(l => (
                     <option key={l.name} value={l.name}>{l.flag} {l.name}</option>
@@ -399,25 +399,27 @@ export default function SetupScreen({ stadiums, matches, onComplete, isLight, on
 
             {/* Accessibility Preferences */}
             <div className="space-y-2.5">
-              <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+              <label id="accessibility-options-label" className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
                 <Accessibility className="w-3.5 h-3.5 text-sky-400" />
                 Accessibility Assistance Mode
               </label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div role="radiogroup" aria-labelledby="accessibility-options-label" className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {accessibilityOptions.map(opt => (
                   <button
                     key={opt.id}
                     id={`access-btn-${opt.id}`}
                     type="button"
+                    role="radio"
+                    aria-checked={accessibility === opt.id}
                     onClick={() => setAccessibility(opt.id as any)}
-                    className={`text-left p-3 rounded-xl border text-xs transition-all cursor-pointer flex items-start gap-2.5 ${getAccessColorClass(opt.id, accessibility === opt.id)}`}
+                    className={`text-left p-3 rounded-xl border text-xs transition-all focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-sky-500 focus-visible:outline-none cursor-pointer flex items-start gap-2.5 ${getAccessColorClass(opt.id, accessibility === opt.id)}`}
                   >
                     <div className="mt-0.5 text-inherit shrink-0">
                       {getAccessIcon(opt.id)}
                     </div>
                     <div>
                       <div className="font-bold">{opt.label}</div>
-                      <div className="text-[10px] text-slate-400 mt-0.5 leading-snug line-clamp-2">{opt.desc}</div>
+                      <div className="text-[10px] text-slate-300 mt-0.5 leading-snug line-clamp-2">{opt.desc}</div>
                     </div>
                   </button>
                 ))}
@@ -426,11 +428,11 @@ export default function SetupScreen({ stadiums, matches, onComplete, isLight, on
 
             {/* Preferred Transport Mode */}
             <div className="space-y-2.5">
-              <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+              <label id="transport-options-label" className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
                 <Train className="w-3.5 h-3.5 text-indigo-400" />
                 Preferred Transport Mode
               </label>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <div role="radiogroup" aria-labelledby="transport-options-label" className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {transportOptions.map(opt => {
                   const Icon = opt.icon;
                   return (
@@ -438,13 +440,15 @@ export default function SetupScreen({ stadiums, matches, onComplete, isLight, on
                       key={opt.id}
                       id={`transport-btn-${opt.id}`}
                       type="button"
+                      role="radio"
+                      aria-checked={transport === opt.id}
                       onClick={() => setTransport(opt.id as any)}
-                      className={`p-3 rounded-xl border flex flex-col items-center text-center gap-1.5 transition-all cursor-pointer ${getTransportColorClass(opt.id, transport === opt.id)}`}
+                      className={`p-3 rounded-xl border flex flex-col items-center text-center gap-1.5 transition-all focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500 focus-visible:outline-none cursor-pointer ${getTransportColorClass(opt.id, transport === opt.id)}`}
                     >
                       <Icon className="w-4.5 h-4.5" />
                       <div>
                         <div className="text-[10px] font-bold leading-tight">{opt.label}</div>
-                        <div className="text-[8px] text-slate-500 mt-0.5 leading-none">{opt.desc}</div>
+                        <div className="text-[8px] text-slate-300 mt-0.5 leading-none">{opt.desc}</div>
                       </div>
                     </button>
                   );

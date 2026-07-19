@@ -8,6 +8,7 @@ import {
   TRANSPORT_OPTIONS, 
   STADIUM_POLICIES 
 } from "./data.js";
+import { sanitizeModelOutput } from "./security.js";
 
 // Initialize GoogleGenAI SDK on the server side
 const ai = new GoogleGenAI({
@@ -174,7 +175,34 @@ GUIDELINES FOR YOUR BEHAVIOR:
 6. If asked about EXITING, use gate crowd levels and metro statuses to suggest the best gate and explain why.
 7. Keep responses concise, visually engaging, structured with lists, bullet points, bold markers, and supportive icons.
 8. If the user lost their friend or faces an emergency, guide them immediately to the closest Medical Station (Main Medical at Section 110 or First Aid Section 132 for MetLife) and instruct them to remain calm, providing emergency contact numbers.
-9. Support the user through local language and translated stadium announcements using your natural multi-lingual capability.`;
+9. Support the user through local language and translated stadium announcements using your natural multi-lingual capability.
+10. FOR EVERY STADIUM RECOMMENDATION OR ADVICE QUERY, you MUST output these four custom structured blocks in your response, styled EXACTLY as below:
+
+:::thinking
+[Step 1 description - what you are evaluating first]
+[Step 2 description - e.g. checking crowd levels, weather, transport schedules]
+[Step 3 description - e.g. factoring in match kickoff time and user walk speeds]
+[Step 4 description - e.g. building optimal ADA/accessibility recommendation]
+:::
+
+:::confidence
+Score: [High | Medium | Low]
+Reason: [A clear 1-sentence reason justifying the confidence score, e.g., turnstile sensor APIs are streaming live 15s telemetry data.]
+:::
+
+:::factors
+[factor-type-1]: [A concise factor with custom emoji or label. E.g., crowd: Gate E has 5m queue vs Gate B 35m]
+[factor-type-2]: [E.g., time: Saves 18 minutes of walk time]
+[factor-type-3]: [E.g., accessibility: 100% ramp-access path, no stairs]
+:::
+
+:::alternatives
+- **Best Overall**: [E.g., Gate E: direct ramp access, 4m queue, 120m walk]
+- **Fastest Option**: [E.g., Gate A: 5m queue, but includes 300m stairs walk]
+- **Shortest Walk**: [E.g., Gate B: 20m from seat but 35m congested queue]
+:::
+
+Do not skip these blocks. They are used by the visual client interface to build interactive cards.`;
 
   try {
     // Stage 1: Send query to Gemini with tools
@@ -224,13 +252,13 @@ Please formulate a helpful, complete, and friendly final response to the user in
       });
 
       return {
-        text: finalResponse.text || "I apologize, I processed the stadium data but couldn't generate a text response. Please try again.",
+        text: sanitizeModelOutput(finalResponse.text || "I apologize, I processed the stadium data but couldn't generate a text response. Please try again."),
         toolCalls: functionCalls.map(c => c.name)
       };
     } else {
       // Direct text answer (no tool needed or fallback)
       return {
-        text: initialResponse.text || "I'm here to help! What stadium details can I find for you?",
+        text: sanitizeModelOutput(initialResponse.text || "I'm here to help! What stadium details can I find for you?"),
         toolCalls: []
       };
     }

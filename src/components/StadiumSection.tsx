@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Stadium, Gate, FoodStall, Washroom, Facility, UserSetup } from '../types';
 import StadiumMap from './StadiumMap';
 import { 
@@ -203,8 +203,46 @@ export default function StadiumSection({
 
   const isFoodMode = filterType === 'food';
 
+  // Focus Trapping & Autofocus for Route Popup Modal
+  useEffect(() => {
+    if (routePopupStall) {
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          setRoutePopupStall(null);
+        }
+      };
+      window.addEventListener('keydown', handleKeyDown);
+      // Autofocus close button to center visual context
+      setTimeout(() => {
+        document.getElementById('close-route-popup')?.focus();
+      }, 50);
+      return () => {
+        window.removeEventListener('keydown', handleKeyDown);
+      };
+    }
+  }, [routePopupStall]);
+
+  // Focus Trapping & Autofocus for Pre-Order Modal
+  useEffect(() => {
+    if (selectedFoodStall) {
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          resetOrderState();
+        }
+      };
+      window.addEventListener('keydown', handleKeyDown);
+      // Autofocus close button to center visual context
+      setTimeout(() => {
+        document.getElementById('close-order-modal')?.focus();
+      }, 50);
+      return () => {
+        window.removeEventListener('keydown', handleKeyDown);
+      };
+    }
+  }, [selectedFoodStall]);
+
   return (
-    <div id="stadium-section-container" className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-400">
+    <section id="stadium-section-container" aria-label="Stadium Concourse and Food Navigator" className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-400">
       
       {/* -------------------- DYNAMIC VIEW SELECTION -------------------- */}
       {!isFoodMode ? (
@@ -727,7 +765,7 @@ export default function StadiumSection({
       {/* -------------------- SEAT-TO-RESTAURANT ROUTE POPUP MODAL -------------------- */}
       {routePopupStall && (
         <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-in fade-in duration-300">
-          <div className="w-full max-w-4xl bg-slate-950 border border-slate-800 rounded-[32px] shadow-2xl overflow-hidden flex flex-col relative animate-in zoom-in-95 duration-300 max-h-[90vh]">
+          <div role="dialog" aria-modal="true" aria-labelledby="route-dialog-title" className="w-full max-w-4xl bg-slate-950 border border-slate-800 rounded-[32px] shadow-2xl overflow-hidden flex flex-col relative animate-in zoom-in-95 duration-300 max-h-[90vh]">
             
             {/* Beautiful Colorful Header line */}
             <div className="h-2 w-full bg-gradient-to-r from-blue-500 via-indigo-500 via-purple-500 via-pink-500 via-orange-500 to-yellow-400" />
@@ -739,7 +777,7 @@ export default function StadiumSection({
                   <Navigation className="w-5 h-5 animate-pulse" />
                 </div>
                 <div>
-                  <h3 className="font-black text-slate-100 text-sm tracking-wide uppercase">Seat-to-Table Live Navigator</h3>
+                  <h3 id="route-dialog-title" className="font-black text-slate-100 text-sm tracking-wide uppercase">Seat-to-Table Live Navigator</h3>
                   <p className="text-[10px] text-slate-400 font-mono">
                     Routing from Section <span className="text-emerald-400 font-extrabold">{setup.seat}</span> to <span className="text-amber-400 font-extrabold">{routePopupStall.name}</span> (Section {routePopupStall.section})
                   </p>
@@ -749,7 +787,8 @@ export default function StadiumSection({
               <button 
                 id="close-route-popup"
                 onClick={() => setRoutePopupStall(null)}
-                className="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 hover:text-white cursor-pointer transition-colors"
+                aria-label="Close Navigator"
+                className="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 hover:text-white focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none cursor-pointer transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -892,7 +931,7 @@ export default function StadiumSection({
       {/* -------------------- FOOD PRE-ORDER SIMULATION MODAL OVERLAY -------------------- */}
       {selectedFoodStall && selectedItem && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-in fade-in duration-300">
-          <div className="w-full max-w-md bg-slate-900 border border-white/10 rounded-[30px] shadow-[0_20px_50px_rgba(244,63,94,0.15)] overflow-hidden flex flex-col relative animate-in zoom-in-95 duration-300">
+          <div role="dialog" aria-modal="true" aria-labelledby="preorder-dialog-title" className="w-full max-w-md bg-slate-900 border border-white/10 rounded-[30px] shadow-[0_20px_50px_rgba(244,63,94,0.15)] overflow-hidden flex flex-col relative animate-in zoom-in-95 duration-300">
             
             {/* Decorative Top Rainbow Strip */}
             <div className="h-2 w-full bg-gradient-to-r from-rose-600 via-orange-500 via-yellow-400 via-emerald-500 via-sky-500 to-indigo-600" />
@@ -902,14 +941,15 @@ export default function StadiumSection({
               <div className="flex items-center gap-2">
                 <Utensils className="w-5 h-5 text-amber-400" />
                 <div>
-                  <h3 className="font-extrabold text-slate-100 text-sm">FIFA Fast-Pass Pre-Order</h3>
+                  <h3 id="preorder-dialog-title" className="font-extrabold text-slate-100 text-sm">FIFA Fast-Pass Pre-Order</h3>
                   <p className="text-[10px] text-slate-500">Direct Express Ingress Service</p>
                 </div>
               </div>
               <button 
                 id="close-order-modal"
                 onClick={resetOrderState}
-                className="w-8 h-8 rounded-full bg-slate-950 border border-slate-800 flex items-center justify-center text-slate-400 hover:text-white cursor-pointer"
+                aria-label="Close Order Modal"
+                className="w-8 h-8 rounded-full bg-slate-950 border border-slate-800 flex items-center justify-center text-slate-400 hover:text-white focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1162,6 +1202,6 @@ export default function StadiumSection({
         </div>
       )}
 
-    </div>
+    </section>
   );
 }

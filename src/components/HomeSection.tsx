@@ -49,7 +49,7 @@ export default function HomeSection({ setup, match, stadium, transport, onNaviga
   }, []);
 
   return (
-    <div id="home-section-container" className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-400">
+    <section id="home-section-container" aria-label="Spectator Home Dashboard" className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-400">
       
       {/* 1. Hero Welcomer Greeting - Dynamic Gradient Header */}
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-red-600 via-pink-600 to-indigo-800 p-6 md:p-8 text-white shadow-xl shadow-red-500/10">
@@ -106,7 +106,8 @@ export default function HomeSection({ setup, match, stadium, transport, onNaviga
         {/* Tile 1: Navigate */}
         <button
           onClick={() => onNavigateToSection('stadium')}
-          className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 p-4 text-left text-slate-950 shadow-lg shadow-emerald-500/5 hover:scale-[1.02] transition-all cursor-pointer"
+          aria-label="Find seat and open live stadium map directions"
+          className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 p-4 text-left text-slate-950 shadow-lg shadow-emerald-500/5 hover:scale-[1.02] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-emerald-400 focus-visible:outline-none transition-all cursor-pointer"
         >
           <div className="absolute top-0 right-0 w-16 h-16 bg-white/10 rounded-full blur-xl pointer-events-none" />
           <div className="w-10 h-10 rounded-xl bg-slate-950/10 flex items-center justify-center mb-3">
@@ -119,7 +120,8 @@ export default function HomeSection({ setup, match, stadium, transport, onNaviga
         {/* Tile 2: Food & Eats */}
         <button
           onClick={() => onNavigateToSection('stadium')}
-          className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 p-4 text-left text-slate-950 shadow-lg shadow-orange-500/5 hover:scale-[1.02] transition-all cursor-pointer"
+          aria-label="Preorder food from stadium stalls with short queue indicators"
+          className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 p-4 text-left text-slate-950 shadow-lg shadow-orange-500/5 hover:scale-[1.02] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-all cursor-pointer"
         >
           <div className="absolute top-0 right-0 w-16 h-16 bg-white/10 rounded-full blur-xl pointer-events-none" />
           <div className="w-10 h-10 rounded-xl bg-slate-950/10 flex items-center justify-center mb-3">
@@ -132,7 +134,8 @@ export default function HomeSection({ setup, match, stadium, transport, onNaviga
         {/* Tile 3: AI Match predictions */}
         <button
           onClick={() => onNavigateToSection('match-center')}
-          className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-fuchsia-500 to-pink-600 p-4 text-left text-white shadow-lg shadow-pink-500/5 hover:scale-[1.02] transition-all cursor-pointer"
+          aria-label="Open Match Center to see live line-ups, stats, and real-time AI game analysis"
+          className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-fuchsia-500 to-pink-600 p-4 text-left text-white shadow-lg shadow-pink-500/5 hover:scale-[1.02] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-pink-500 focus-visible:outline-none transition-all cursor-pointer"
         >
           <div className="absolute top-0 right-0 w-16 h-16 bg-white/10 rounded-full blur-xl pointer-events-none" />
           <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center mb-3">
@@ -145,7 +148,8 @@ export default function HomeSection({ setup, match, stadium, transport, onNaviga
         {/* Tile 4: Smart Assistant */}
         <button
           onClick={() => onNavigateToSection('assistant')}
-          className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 p-4 text-left text-white shadow-lg shadow-indigo-500/5 hover:scale-[1.02] transition-all cursor-pointer"
+          aria-label="Chat with AI Stadium Copilot Assistant"
+          className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 p-4 text-left text-white shadow-lg shadow-indigo-500/5 hover:scale-[1.02] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 focus-visible:outline-none transition-all cursor-pointer"
         >
           <div className="absolute top-0 right-0 w-16 h-16 bg-white/10 rounded-full blur-xl pointer-events-none" />
           <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center mb-3">
@@ -275,6 +279,6 @@ export default function HomeSection({ setup, match, stadium, transport, onNaviga
         </button>
       </div>
 
-    </div>
+    </section>
   );
 }

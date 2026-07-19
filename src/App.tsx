@@ -303,7 +303,8 @@ export default function App() {
           <button
             id="theme-toggle-btn"
             onClick={toggleTheme}
-            className={`p-2 rounded-xl border flex items-center justify-center transition-all cursor-pointer ${
+            aria-label={isLight ? "Switch to Dark Mode" : "Switch to Light Mode"}
+            className={`p-2.5 rounded-xl border flex items-center justify-center transition-all focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-pink-500 focus-visible:outline-none cursor-pointer ${
               isLight 
                 ? 'bg-slate-100 border-slate-300 text-slate-700 hover:bg-slate-200 hover:text-slate-900' 
                 : 'bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-700 hover:text-slate-100'
@@ -316,7 +317,8 @@ export default function App() {
           <button
             id="reset-profile-btn"
             onClick={() => setSetup(null)}
-            className={`flex items-center gap-1.5 px-3 py-2 border rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            aria-label="Change Match or Seat assignment setup"
+            className={`flex items-center gap-1.5 px-3.5 py-2.5 border rounded-xl text-xs font-bold transition-all focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-pink-500 focus-visible:outline-none cursor-pointer ${
               isLight
                 ? 'bg-slate-100 border-slate-300 text-slate-700 hover:bg-slate-200 hover:text-slate-900'
                 : 'bg-slate-950 border-slate-800 text-slate-300 hover:text-slate-100 hover:border-slate-700'
@@ -328,9 +330,13 @@ export default function App() {
         </div>
       </header>
 
-      {/* Proactive Notification Carousel ticker */}
+      {/* Proactive Notification Ticker */}
       {notifications.length > 0 && (
-        <div className="bg-pink-950/10 border-b border-pink-500/10 px-6 py-2.5 flex items-center justify-between z-10 transition-all">
+        <div 
+          role="status" 
+          aria-live="polite" 
+          className="bg-pink-950/10 border-b border-pink-500/10 px-6 py-2.5 flex items-center justify-between z-10 transition-all"
+        >
           <div className="flex items-center gap-2.5 max-w-[85%]">
             <div className="w-5 h-5 rounded bg-pink-500/10 flex items-center justify-center text-pink-400 border border-pink-500/20 shrink-0">
               <BellRing className="w-3.5 h-3.5 animate-bounce" />
@@ -405,7 +411,10 @@ export default function App() {
       </main>
 
       {/* Floating Bottom Navigation Tab Bar - Apple & Spotify Usability Quality */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/80 backdrop-blur-xl border border-slate-800 rounded-3xl p-2 flex items-center gap-1.5 z-50 shadow-2xl shadow-black/80 max-w-[92vw] sm:max-w-md w-full">
+      <nav 
+        aria-label="Main Tab Navigation" 
+        className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/80 backdrop-blur-xl border border-slate-800 rounded-3xl p-2 flex items-center gap-1.5 z-50 shadow-2xl shadow-black/80 max-w-[92vw] sm:max-w-md w-full"
+      >
         {[
           { id: 'home', label: 'Home', icon: Home },
           { id: 'match_center', label: 'Match Center', icon: Trophy },
@@ -420,7 +429,9 @@ export default function App() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex-1 flex flex-col items-center justify-center py-2 rounded-2xl transition-all cursor-pointer ${
+              aria-label={tab.label}
+              aria-current={isActive ? 'page' : undefined}
+              className={`flex-1 flex flex-col items-center justify-center py-2 rounded-2xl transition-all focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-pink-500 focus-visible:outline-none cursor-pointer ${
                 isActive 
                   ? 'bg-gradient-to-r from-pink-500 to-indigo-600 text-white font-black shadow-md shadow-pink-500/10' 
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/30'
@@ -431,7 +442,7 @@ export default function App() {
             </button>
           );
         })}
-      </div>
+      </nav>
 
     </div>
   );
