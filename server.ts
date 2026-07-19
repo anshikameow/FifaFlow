@@ -84,8 +84,9 @@ async function startServer() {
         transportOptions: TRANSPORT_OPTIONS,
         policies: STADIUM_POLICIES
       });
-    } catch (err: any) {
-      logger.error("Error in /api/live-info endpoint:", err.message);
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      logger.error("Error in /api/live-info endpoint:", errMsg);
       // OWASP: Mask detailed system stack trace/errors from client response
       res.status(500).json({ 
         success: false, 
@@ -132,8 +133,9 @@ async function startServer() {
       });
 
       res.json({ success: true, ...copilotResponse });
-    } catch (err: any) {
-      logger.error("Exception handled in /api/chat endpoint:", err.message || err);
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      logger.error("Exception handled in /api/chat endpoint:", errMsg);
       // Exclude stack traces, present user-friendly fallback
       res.status(500).json({ 
         success: false, 

@@ -101,3 +101,13 @@ export interface TimelineStep {
   status: 'completed' | 'active' | 'upcoming';
   icon: string;
 }
+
+export interface StadiumPolicies {
+  clearBag: string;
+  powerBanks: string;
+  cameras: string;
+  umbrellas: string;
+  reEntry: string;
+  alcohol: string;
+}
+

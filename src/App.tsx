@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { UserSetup, ChatMessage, Stadium, Match, FoodStall, Washroom, Facility, TransportOption } from './types';
+import { UserSetup, ChatMessage, Stadium, Match, FoodStall, Washroom, Facility, TransportOption, StadiumPolicies } from './types';
 import SetupScreen from './components/SetupScreen';
 import HomeSection from './components/HomeSection';
 import MatchCenterSection from './components/MatchCenterSection';
@@ -78,7 +78,7 @@ export default function App() {
   const [washrooms, setWashrooms] = useState<Washroom[]>(WASHROOMS);
   const [facilities, setFacilities] = useState<Facility[]>(FACILITIES);
   const [transportOptions, setTransportOptions] = useState<TransportOption[]>(TRANSPORT_OPTIONS);
-  const [policies, setPolicies] = useState<any>(STADIUM_POLICIES);
+  const [policies, setPolicies] = useState<StadiumPolicies>(STADIUM_POLICIES);
 
   // Active Map Route key: 'to-seat' | 'to-food' | 'to-washroom' | null
   const [activeRoute, setActiveRoute] = useState<string | null>(null);
@@ -240,7 +240,7 @@ export default function App() {
       } else {
         throw new Error(data.error);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("[Client] AI Copilot request failure:", err);
       // Fallback response inside client
       setChatHistory(prev => [...prev, {

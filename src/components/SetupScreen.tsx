@@ -95,7 +95,7 @@ export default function SetupScreen({ stadiums, matches, onComplete, isLight, on
     { name: 'Deutsch (German)', flag: '🇩🇪' }
   ];
 
-  const accessibilityOptions = [
+  const accessibilityOptions: { id: UserSetup['accessibility']; label: string; desc: string }[] = [
     { id: 'Standard', label: 'Standard Access', desc: 'Standard pedestrian stairs and routes.' },
     { id: 'Wheelchair', label: 'Wheelchair / ADA', desc: 'Avoids stairs, prioritizes ramps, elevators, and ADA gates.' },
     { id: 'Blind', label: 'Visually Assisted', desc: 'Detailed spatial audio direction markers.' },
@@ -103,7 +103,7 @@ export default function SetupScreen({ stadiums, matches, onComplete, isLight, on
     { id: 'Elderly', label: 'Elderly / Low-Mobility', desc: 'Minimizes walking distances & steep inclines.' }
   ];
 
-  const transportOptions = [
+  const transportOptions: { id: UserSetup['transport']; label: string; icon: typeof Train; desc: string }[] = [
     { id: 'Metro', label: 'Metro / Train', icon: Train, desc: 'Fast track lines' },
     { id: 'Car', label: 'Rideshare / Car', icon: Car, desc: 'Outer lane drop-off' },
     { id: 'Bus', label: 'Shuttle Bus', icon: Bus, desc: 'Direct gate service' },
@@ -411,7 +411,7 @@ export default function SetupScreen({ stadiums, matches, onComplete, isLight, on
                     type="button"
                     role="radio"
                     aria-checked={accessibility === opt.id}
-                    onClick={() => setAccessibility(opt.id as any)}
+                    onClick={() => setAccessibility(opt.id)}
                     className={`text-left p-3 rounded-xl border text-xs transition-all focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-sky-500 focus-visible:outline-none cursor-pointer flex items-start gap-2.5 ${getAccessColorClass(opt.id, accessibility === opt.id)}`}
                   >
                     <div className="mt-0.5 text-inherit shrink-0">
@@ -442,7 +442,7 @@ export default function SetupScreen({ stadiums, matches, onComplete, isLight, on
                       type="button"
                       role="radio"
                       aria-checked={transport === opt.id}
-                      onClick={() => setTransport(opt.id as any)}
+                      onClick={() => setTransport(opt.id)}
                       className={`p-3 rounded-xl border flex flex-col items-center text-center gap-1.5 transition-all focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500 focus-visible:outline-none cursor-pointer ${getTransportColorClass(opt.id, transport === opt.id)}`}
                     >
                       <Icon className="w-4.5 h-4.5" />

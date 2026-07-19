@@ -332,7 +332,7 @@ export default function AIAssistantSection({
               return (
                 <button
                   key={key}
-                  onClick={() => setActiveWhatIf(isSelected ? null : key as any)}
+                  onClick={() => setActiveWhatIf(isSelected ? null : key as 'penalties' | 'leave_early' | 'accessibility' | 'parking')}
                   className={`p-2.5 rounded-2xl border text-left text-[10px] font-semibold transition-all cursor-pointer ${
                     isSelected
                       ? 'bg-indigo-500/15 border-indigo-500 text-indigo-300 font-bold'

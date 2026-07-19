@@ -169,27 +169,30 @@ export default function ProfileSection({
           <div>
             <label id="profile-accessibility-label" className="block text-slate-400 font-bold mb-1.5">Accessibility profile mode</label>
             <div role="radiogroup" aria-labelledby="profile-accessibility-label" className="grid grid-cols-2 gap-2">
-              {[
-                { id: 'Standard', label: 'Standard Access' },
-                { id: 'Wheelchair', label: 'Wheelchair (Elevator/Ramps)' },
-                { id: 'Blind', label: 'Blind Support (Read Aloud)' },
-                { id: 'Deaf', label: 'Deaf (High flash notifications)' },
-                { id: 'Elderly', label: 'Elderly Support' }
-              ].map((acc) => (
-                <button
-                  key={acc.id}
-                  role="radio"
-                  aria-checked={localAccess === acc.id}
-                  onClick={() => setLocalAccess(acc.id as any)}
-                  className={`p-2.5 rounded-xl border text-left font-medium transition-all focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500 focus-visible:outline-none cursor-pointer ${
-                    localAccess === acc.id 
-                      ? 'bg-indigo-500/10 border-indigo-500 text-indigo-400 font-bold' 
-                      : 'bg-slate-950/80 border-slate-800 hover:border-slate-700 text-slate-400'
-                  }`}
-                >
-                  {acc.label}
-                </button>
-              ))}
+              {(['Standard', 'Wheelchair', 'Blind', 'Deaf', 'Elderly'] as UserSetup['accessibility'][]).map((accId) => {
+                const labels: Record<UserSetup['accessibility'], string> = {
+                  Standard: 'Standard Access',
+                  Wheelchair: 'Wheelchair (Elevator/Ramps)',
+                  Blind: 'Blind Support (Read Aloud)',
+                  Deaf: 'Deaf (High flash notifications)',
+                  Elderly: 'Elderly Support'
+                };
+                return (
+                  <button
+                    key={accId}
+                    role="radio"
+                    aria-checked={localAccess === accId}
+                    onClick={() => setLocalAccess(accId)}
+                    className={`p-2.5 rounded-xl border text-left font-medium transition-all focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500 focus-visible:outline-none cursor-pointer ${
+                      localAccess === accId 
+                        ? 'bg-indigo-500/10 border-indigo-500 text-indigo-400 font-bold' 
+                        : 'bg-slate-950/80 border-slate-800 hover:border-slate-700 text-slate-400'
+                    }`}
+                  >
+                    {labels[accId]}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -197,26 +200,29 @@ export default function ProfileSection({
           <div>
             <label id="profile-transport-label" className="block text-slate-400 font-bold mb-1.5">Transportation mode</label>
             <div role="radiogroup" aria-labelledby="profile-transport-label" className="grid grid-cols-4 gap-2">
-              {[
-                { id: 'Metro', label: 'Metro' },
-                { id: 'Car', label: 'Rideshare' },
-                { id: 'Bus', label: 'Bus' },
-                { id: 'Walking', label: 'Walk' }
-              ].map((trans) => (
-                <button
-                  key={trans.id}
-                  role="radio"
-                  aria-checked={localTransport === trans.id}
-                  onClick={() => setLocalTransport(trans.id as any)}
-                  className={`p-2.5 rounded-xl border text-center font-bold transition-all focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500 focus-visible:outline-none cursor-pointer text-[11px] ${
-                    localTransport === trans.id 
-                      ? 'bg-emerald-500/10 border-emerald-500 text-emerald-400 font-black' 
-                      : 'bg-slate-950/80 border-slate-800 hover:border-slate-700 text-slate-400'
-                  }`}
-                >
-                  {trans.label}
-                </button>
-              ))}
+              {(['Metro', 'Car', 'Bus', 'Walking'] as UserSetup['transport'][]).map((transId) => {
+                const labels: Record<UserSetup['transport'], string> = {
+                  Metro: 'Metro',
+                  Car: 'Rideshare',
+                  Bus: 'Bus',
+                  Walking: 'Walk'
+                };
+                return (
+                  <button
+                    key={transId}
+                    role="radio"
+                    aria-checked={localTransport === transId}
+                    onClick={() => setLocalTransport(transId)}
+                    className={`p-2.5 rounded-xl border text-center font-bold transition-all focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500 focus-visible:outline-none cursor-pointer text-[11px] ${
+                      localTransport === transId 
+                        ? 'bg-emerald-500/10 border-emerald-500 text-emerald-400 font-black' 
+                        : 'bg-slate-950/80 border-slate-800 hover:border-slate-700 text-slate-400'
+                    }`}
+                  >
+                    {labels[transId]}
+                  </button>
+                );
+              })}
             </div>
           </div>
 

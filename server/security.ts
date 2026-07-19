@@ -169,15 +169,15 @@ export function maskSensitiveData(input: string): string {
 }
 
 export const logger = {
-  info: (message: string, ...args: any[]) => {
+  info: (message: string, ...args: unknown[]) => {
     const formatted = maskSensitiveData(message);
     console.log(`[INFO] [${new Date().toISOString()}] ${formatted}`, ...args.map(a => typeof a === 'string' ? maskSensitiveData(a) : a));
   },
-  warn: (message: string, ...args: any[]) => {
+  warn: (message: string, ...args: unknown[]) => {
     const formatted = maskSensitiveData(message);
     console.warn(`[WARN] [${new Date().toISOString()}] ${formatted}`, ...args.map(a => typeof a === 'string' ? maskSensitiveData(a) : a));
   },
-  error: (message: string, ...args: any[]) => {
+  error: (message: string, ...args: unknown[]) => {
     const formatted = maskSensitiveData(message);
     console.error(`[ERROR] [${new Date().toISOString()}] ${formatted}`, ...args.map(a => typeof a === 'string' ? maskSensitiveData(a) : a));
   }

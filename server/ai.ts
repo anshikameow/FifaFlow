@@ -105,7 +105,7 @@ const toolsList = [
 ];
 
 // Execute local function logic based on model call
-function executeToolLocal(name: string, args: any) {
+function executeToolLocal(name: string, args?: { type?: string }) {
   console.log(`[AI Copilot] Executing local tool: ${name} with args:`, args);
   switch (name) {
     case "getStadiumStatus":
@@ -262,10 +262,11 @@ Please formulate a helpful, complete, and friendly final response to the user in
         toolCalls: []
       };
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("[AI Copilot] Error in handleCopilotChat:", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
     return {
-      text: `I encountered an issue connecting to the stadium copilot services. Please make sure the GEMINI_API_KEY is configured in your project secrets. Error detail: ${error.message || error}`,
+      text: `I encountered an issue connecting to the stadium copilot services. Please make sure the GEMINI_API_KEY is configured in your project secrets. Error detail: ${errorMessage}`,
       toolCalls: []
     };
   }
