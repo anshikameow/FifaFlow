@@ -1,0 +1,6 @@
+{
+  "name": "FIFA Flow",
+  "description": "Built for the FIFA World Cup 2026. A premium, highly interactive, and colorful AI-powered matchday assistant and platform companion before, during, and after matches.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
